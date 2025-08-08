@@ -12,6 +12,9 @@ def initialize_vanilla_model(mconf):
     ### [part d]: Make some model here
 
     ### START CODE HERE
+    
+    attention_model = GPT(mconf)
+    
     ### END CODE HERE
     return attention_model
 
@@ -21,6 +24,8 @@ def initialize_rope_model(mconf):
     ### [part h]: Make some other model here
 
     ### START CODE HERE
+    mconf.use_rope = True
+    attention_model = GPT(mconf)
     ### END CODE HERE
     return attention_model
 
