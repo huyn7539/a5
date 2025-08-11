@@ -24,8 +24,10 @@ def initialize_rope_model(mconf):
     ### [part h]: Make some other model here
 
     ### START CODE HERE
+    
     mconf.use_rope = True
     attention_model = GPT(mconf)
+    
     ### END CODE HERE
     return attention_model
 
@@ -65,6 +67,28 @@ def finetune(reading_params_path, finetune_corpus_path, pretrain_dataset, block_
     trainer_obj = None #Trainer object (see trainer.py for more details)
     tconf = None #TrainerConfig object (see trainer.py for more details)
     ### START CODE HERE
+    
+    corpus = open(finetune_corpus_path, encoding = 'utf-8').read()
+    dataset = NameDataset(corpus, pretrain_dataset)
+
+    if reading_params_path is not None:
+        model.load_state_dict(torch.load(reading_params_path, map_location=torch.device('cpu'), weights_only = True))
+        max_epochs = 10
+    else:
+        max_epochs = 75
+
+    tconf = TrainerConfig(
+        max_epochs = max_epochs,
+        batch_size = 256,
+        learning_rate = finetune_lr,
+        lr_decay = True,
+        warmup_tokens = 512 * 20,
+        final_tokens = 200 * len(pretrain_dataset) * block_size,
+        num_workers = 0
+    )
+
+    trainer_obj = Trainer(model, dataset, tconf, writer)
+    
     ### END CODE HERE
     return tconf, trainer_obj
 
